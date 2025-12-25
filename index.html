@@ -10,12 +10,13 @@
 
     <style>
         body {
-            background: linear-gradient(180deg, #a2c2e2, #f0f6ff);
+            background: rgb(255, 243, 224); 
             font-family: "Helvetica", sans-serif;
             overflow: hidden;
             height: 100vh;
             text-align: center;
             color: #2a3d66;
+            transition: background 1s linear; 
         }
 
         h1 {
@@ -26,12 +27,12 @@
 
         .cloud {
             position: absolute;
-            padding: 10px 20px;
+            padding: 20px 40px;
             background: #ffffffcc;
             color: #243b55;
             border-radius: 50px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            font-size: 18px;
+            font-size: 28px;
             cursor: pointer;
             animation: fall 10s linear forwards;
             user-select: none;
@@ -50,40 +51,66 @@
     </style>
 </head>
 <body>
-    <h1>☁️ Obłoki Mindfulness ☁️</h1>
+<h1>☁️ Obłoki Mindfulness ☁️</h1>
 
-    <py-script>
+<py-script>
 from js import document, setInterval
 from pyodide.ffi import create_proxy
 import random
 
-words = [
-    "spokój", "oddech", "tu i teraz", "równowaga",
-    "świadomość", "wdzięczność", "akceptacja", "cisza"
-]
+calm_words = ["spokój", "oddech", "tu i teraz", "równowaga"]
+bad_words = ["chaos", "stres", "pośpiech", "niepokój"]
+
+bg_color = [255, 243, 224]
+
+step_good = 15
+step_bad = 5
+
+def rgb_to_str(rgb):
+    return f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
 
 def create_cloud(*args):
-    word = random.choice(words)
+    global bg_color
+
+    if random.random() < 0.75:
+        word = random.choice(calm_words)
+        is_calm = True
+    else:
+        word = random.choice(bad_words)
+        is_calm = False
+
     cloud = document.createElement("div")
     cloud.classList.add("cloud")
     cloud.innerText = word
     cloud.style.left = f"{random.randint(0, 85)}%"
     document.body.appendChild(cloud)
 
-    # usuń po zakończeniu animacji lub kliknięciu
     def remove(event=None):
         if cloud in document.body.children:
             document.body.removeChild(cloud)
 
-    # po kliknięciu
-    cloud.addEventListener("click", create_proxy(remove))
+    def on_click(event):
+        global bg_color
+        step = step_good if is_calm else step_bad
+        if is_calm:
+            target = [173, 216, 230]  # błękit
+        else:
+            target = [255, 100, 100]  # czerwony
 
-    # po zakończeniu animacji
+        for i in range(3):
+            if bg_color[i] < target[i]:
+                bg_color[i] = min(bg_color[i]+step, target[i])
+            elif bg_color[i] > target[i]:
+                bg_color[i] = max(bg_color[i]-step, target[i])
+
+        document.body.style.background = rgb_to_str(bg_color)
+        remove()
+
+    cloud.addEventListener("click", create_proxy(on_click))
     cloud.addEventListener("animationend", create_proxy(remove))
 
-# Proxy funkcji i interwał generowania obłoków
 create_cloud_proxy = create_proxy(create_cloud)
-setInterval(create_cloud_proxy, 2000)
-    </py-script>
+setInterval(create_cloud_proxy, 800)  # częstsze obłoki
+</py-script>
 </body>
 </html>
