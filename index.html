@@ -10,13 +10,13 @@
 
     <style>
         body {
-            background: rgb(255, 243, 224); 
+            background: rgb(255, 255, 255); /* startowy kolor biały */
             font-family: "Helvetica", sans-serif;
             overflow: hidden;
             height: 100vh;
             text-align: center;
             color: #2a3d66;
-            transition: background 1s linear; 
+            transition: background 1s linear; /* płynna zmiana tła */
         }
 
         h1 {
@@ -34,7 +34,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             font-size: 28px;
             cursor: pointer;
-            animation: fall 10s linear forwards;
+            animation: fall 6s linear forwards; /* szybszy ruch obłoków */
             user-select: none;
             transition: transform 0.2s ease, opacity 0.2s ease;
         }
@@ -58,13 +58,16 @@ from js import document, setInterval
 from pyodide.ffi import create_proxy
 import random
 
+# słowa uspokajające i negatywne
 calm_words = ["spokój", "oddech", "tu i teraz", "równowaga"]
 bad_words = ["chaos", "stres", "pośpiech", "niepokój"]
 
-bg_color = [255, 243, 224]
+# startowy kolor tła biały
+bg_color = [255, 255, 255]
 
-step_good = 15
-step_bad = 5
+# kroki zmiany koloru
+step_good = 20   # dobry obłok – zmiana w stronę niebieskiego
+step_bad = 5     # zły obłok – zmiana w stronę czerwonego
 
 def rgb_to_str(rgb):
     return f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
@@ -72,7 +75,8 @@ def rgb_to_str(rgb):
 def create_cloud(*args):
     global bg_color
 
-    if random.random() < 0.75:
+    # 75% szansa na dobry obłok, 25% na zły
+    if random.random() < 0.5:
         word = random.choice(calm_words)
         is_calm = True
     else:
