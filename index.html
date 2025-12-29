@@ -58,16 +58,13 @@ from js import document, setInterval
 from pyodide.ffi import create_proxy
 import random
 
-# słowa uspokajające i negatywne
 calm_words = ["spokój", "oddech", "tu i teraz", "równowaga"]
 bad_words = ["chaos", "stres", "pośpiech", "niepokój"]
 
-# startowy kolor tła biały
 bg_color = [255, 255, 255]
 
-# kroki zmiany koloru
-step_good = 20   # dobry obłok – zmiana w stronę niebieskiego
-step_bad = 5     # zły obłok – zmiana w stronę czerwonego
+step_good = 20
+step_bad = 5
 
 def rgb_to_str(rgb):
     return f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
@@ -75,7 +72,6 @@ def rgb_to_str(rgb):
 def create_cloud(*args):
     global bg_color
 
-    # 75% szansa na dobry obłok, 25% na zły
     if random.random() < 0.5:
         word = random.choice(calm_words)
         is_calm = True
